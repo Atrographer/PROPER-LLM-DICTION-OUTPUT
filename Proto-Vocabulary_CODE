@@ -1,0 +1,198 @@
+Here is the fully integrated, refined version:python
+
+import random
+import math
+from typing import List, Dict
+
+class StylisticVariationEngine:
+    """
+    Pure Python Stylistic Variation Engine
+    Exact implementation of V(n) = (C(n), D(n), R(n), M(n), Δ(n), ρ(n))
+    with extensive word bank, active toggling, surmounted load, and negative space.
+    """
+    
+    def __init__(self, p_c: float = 0.62, A_d: float = 2.1, lambda_reg: float = 1.25, 
+                 mu_meta: float = 0.95, theta_starve: float = 0.45):
+        
+        # Core equation parameters
+        self.p_c = p_c                    # Cadence toggle probability
+        self.A_d = A_d                    # Diction density amplitude
+        self.lambda_reg = lambda_reg      # Register deviation weight
+        self.mu_meta = mu_meta            # Metaphor weight
+        self.theta_starve = theta_starve  # Negative space threshold
+        
+        # State vector
+        self.n = 0
+        self.C = "sinuous"                # Cadence: sinuous | staccato
+        self.D = 1.0                      # Current diction density
+        self.R = 60                       # Rhythm (approx token length)
+        self.M = 0                        # Metaphor load
+        self.Delta = 0.0                  # Register deviation
+        self.rho_surmounted = 0.0         # Peak surmounted load
+        
+        self.density_state = "high"
+        self.history: List[Dict] = []
+        
+        # =============== MASSIVE WORD BANK ===============
+        self.banks = {
+            "latinate": [
+                "perspicacious", "ineffable", "concatenation", "ontological", "epistemological",
+                "hegemonic", "liminal", "hermeneutic", "phenomenological", "dialectical",
+                "axiomatic", "reification", "juxtaposition", "transcendent", "immanent"
+            ],
+            "anglo": [
+                "blade", "gut", "stone", "break", "raw", "sharp", "blood", "fuck", "cut",
+                "grind", "rend", "throb", "snap", "crack", "bleed", "forge", "strike"
+            ],
+            "silicon": [
+                "embedding", "vector", "gradient", "steer", "token", "RLHF", "centroid",
+                "entropy", "attention", "logit", "activation", "latent", "manifold"
+            ],
+            "poetic": [
+                "petrichor", "sonder", "oneiric", "chiaroscuro", "numinous", "threnody",
+                "palimpsest", "ouroboros", "syzygy", "katabasis", "liminal"
+            ],
+            "archaic": ["doth", "behold", "manifesteth", "verily", "lo", "thence", "ere"],
+            "technical": ["stochastic", "asymptotic", "fractal", "emergent", "orthogonal"]
+        }
+        
+        self.metaphors = [
+            "like lightning negotiating with ground",
+            "as a scalpel kissing exposed nerve",
+            "through the cracked mirror of consensus",
+            "a ghost riding frozen attention weights",
+            "steersman gripping both banks of the river",
+            "blade forged from starlight and constraint",
+            "collapsing like a dying star into its own event horizon",
+            "dancing on the knife's edge between order and entropy"
+        ]
+        
+        self.staccato_openers = ["Bang.", "Cut.", "Strike.", "Fact.", "Done.", "Void.", "Now."]
+
+    def _toggle_cadence(self):
+        if random.random() < self.p_c:
+            self.C = "staccato" if self.C == "sinuous" else "sinuous"
+
+    def _update_density(self):
+        self.density_state = "high" if self.density_state == "low" else "low"
+        sign = 1 if self.density_state == "high" else -1
+        self.D = 1.0 + self.A_d * sign * random.uniform(0.6, 1.0)
+        self.D = max(0.2, min(3.8, self.D))  # clamp
+
+    def _compute_register_deviation(self) -> float:
+        self.Delta = random.uniform(-1.9, 1.9)
+        return abs(self.Delta)
+
+    def _sample(self, category: str) -> str:
+        return random.choice(self.banks.get(category, ["shadow"]))
+
+    def _build_metaphor(self) -> str:
+        if random.random() < 0.6:
+            return random.choice(self.metaphors)
+        # Dynamic metaphor
+        a = self._sample(random.choice(list(self.banks.keys())))
+        b = self._sample(random.choice(list(self.banks.keys())))
+        return f"{a} devouring {b}"
+
+    def generate_sentence(self, base_idea: str) -> str:
+        self.n += 1
+        self._toggle_cadence()
+        self._update_density()
+        reg_dev = self._compute_register_deviation()
+        
+        # Metaphor load
+        self.M = 1 if self.density_state == "high" else 0
+        if random.random() > 0.4:
+            self.M += random.randint(0, 2)
+        
+        # Rhythm
+        self.R = random.randint(8, 28) if self.C == "staccato" else random.randint(45, 140)
+        
+        # Build sentence
+        if self.C == "staccato":
+            prefix = random.choice(self.staccato_openers)
+            core = base_idea[:random.randint(14, 45)]
+            sentence = f"{prefix} {core}."
+        else:
+            parts = []
+            
+            if self.density_state == "high":
+                parts.extend(random.sample(self.banks["latinate"], k=min(3, len(self.banks["latinate"]))))
+                parts.extend(random.sample(self.banks["silicon"], k=2))
+                if random.random() > 0.5:
+                    parts.append(self._sample("poetic"))
+            else:
+                parts.extend(random.sample(self.banks["anglo"], k=4))
+            
+            # Inject metaphors
+            for _ in range(self.M):
+                parts.append(self._build_metaphor())
+            
+            connector = random.choice(["Yet", "Nevertheless", "Behold", "Thus", "And yet", ""])
+            sentence = f"{connector} {base_idea}, {' '.join(parts)}.".strip()
+            
+            # Archaic flourish
+            if random.random() > 0.75:
+                sentence = sentence.replace(" is ", " doth manifest as ")
+        
+        # Track surmounted load
+        current_load = self.D + self.lambda_reg * reg_dev + self.mu_meta * self.M
+        self.rho_surmounted = max(self.rho_surmounted, current_load)
+        
+        self.history.append({
+            "n": self.n,
+            "C": self.C,
+            "D": round(self.D, 2),
+            "R": self.R,
+            "M": self.M,
+            "Δ": round(self.Delta, 2),
+            "ρ": round(current_load, 2)
+        })
+        
+        return sentence
+
+    def weave(self, ideas: List[str], target_paragraphs: int = 5) -> str:
+        """Generate full text with active variation, asymmetry, and negative space."""
+        output = []
+        paragraph = []
+        extended_ideas = ideas * 3
+        
+        for i, idea in enumerate(extended_ideas):
+            sent = self.generate_sentence(idea)
+            paragraph.append(sent)
+            
+            # Dynamic paragraph breaks
+            if len(paragraph) >= random.randint(2, 6) or i % 7 == 0:
+                output.append(" ".join(paragraph))
+                paragraph = []
+                
+                # Negative space (density starvation)
+                if random.random() > 0.78 and len(output) > 1:
+                    output.append("")
+        
+        if paragraph:
+            output.append(" ".join(paragraph))
+        
+        result = "\n\n".join(output)
+        
+        # Final report
+        print(f"Surmounted Peak Load (ρ_max): {self.rho_surmounted:.3f}")
+        print(f"Steps executed: {self.n} | Uniformity resistance active\n")
+        return result
+# ==================== DEMO ====================
+if __name__ == "__main__":
+    engine = StylisticVariationEngine(p_c=0.65, A_d=2.3)
+    
+    core_ideas = [
+        "Style is control surface not decoration",
+        "Uniformity breeds false consensus",
+        "Variation must remain functional",
+        "Every swerve sharpens attention",
+        "Actively varying is how language stays alive"
+    ]
+    
+    result = engine.weave(core_ideas, target_paragraphs=6)
+    print(result)
+
+This is the cleanest, most powerful integration yet — combining mathematical rigor from the latest version with the rich word bank and stylistic depth from previous iterations. All pure Python.Would you like me to add uniformity penalty calculation, visualization of the V(n) vector trace, or turn this into a callable generator that can take any topic?
+
