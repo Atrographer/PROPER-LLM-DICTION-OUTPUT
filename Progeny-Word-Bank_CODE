@@ -1,0 +1,267 @@
+import random
+from typing import Dict, List, Tuple
+
+class DynamicStylisticOperator:
+    """
+    Advanced Dynamic Stylistic Operator with Extensive Word Bank
+    Pure Python - No dependencies beyond random
+    """
+    
+    def __init__(self, p_c: float = 0.58, D0: float = 1.0, Ad: float = 0.92,
+                 alpha: float = 3.8, mb: int = 1, lambda_reg: float = 0.68,
+                 mu: float = 0.52, theta_starve: float = 0.32):
+        
+        self.p_c = p_c
+        self.D0 = D0
+        self.Ad = Ad
+        self.alpha = alpha
+        self.mb = mb
+        self.lambda_reg = lambda_reg
+        self.mu = mu
+        self.theta_starve = theta_starve
+        
+        # =============== EXTENSIVE WORD BANK ===============
+        self.word_bank: Dict[str, List[str]] = {
+            # High-density / Academic / Precise
+            "formal": [
+                "epistemological", "ontological", "phenomenological", "heuristic", "paradigmatic",
+                "dialectical", "hermeneutic", "axiomatic", "postulate", "axiom", "praxis", "apotheosis",
+                "ineffable", "quintessential", "transcendent", "immanent", "reify", "reification",
+                "interpolate", "extrapolate", "juxtapose", "elucidate", "explicate", "exegesis"
+            ],
+            
+            # Archaic / Literary / Elevated
+            "archaic": [
+                "thenceforth", "heretofore", "forsooth", "verily", "wherefore", "hitherto", "betwixt",
+                "quoth", "methinks", "perchance", "ere", "yon", "lo", "behold", "surcease", "welkin",
+                "ethereal", "eldritch", "numinous", "inexorably", "resplendent", "lugubrious"
+            ],
+            
+            # Poetic / Metaphoric / Sensory
+            "poetic": [
+                "petrichor", "sonder", "oneiric", "liminal", "luminous", "shadowed", "fractured",
+                "echoing", "shimmering", "vespers", "crepuscular", "auroral", "nocturne", "syzygy",
+                "katabasis", "anabasis", "threnody", "palimpsest", "ouroboros", "chiaroscuro"
+            ],
+            
+            # Technical / Scientific
+            "technical": [
+                "stochastic", "entropic", "atavistic", "recursive", "iterative", "convergent",
+                "divergent", "orthogonal", "isomorphic", "homeostatic", "asymptotic", "fractal",
+                "topological", "vectorized", "probabilistic", "deterministic", "emergent"
+            ],
+            
+            # Street / Slang / Raw
+            "slang": [
+                "cooked", "vibing", "doomscroll", "ratioed", "mid", "bussin", "cap", "no cap",
+                "sus", "rizz", "skibidi", "goated", "yeet", "based", "cringe", "ghosted", "slaps"
+            ],
+            
+            # Terse / Brutal / Minimal
+            "terse": [
+                "cut", "slash", "burn", "break", "forge", "strike", "carve", "rend", "shatter",
+                "grind", "pulse", "throb", "snap", "crack", "bleed"
+            ],
+            
+            # Verbs - High Agency
+            "verbs_high": [
+                "incinerate", "catapult", "unfurl", "fracture", "interlace", "devour", "resurrect",
+                "pulverize", "orchestrate", "transmute", "cauterize", "unravel", "reconfigure"
+            ],
+            
+            "verbs_low": [
+                "drift", "murmur", "wane", "flicker", "hover", "dissolve", "echo", "subside"
+            ],
+            
+            # Adjectives
+            "adjectives": [
+                "visceral", "lacerating", "effervescent", "tenebrous", "incandescent", "byzantine",
+                "kafkaesque", "orwellian", "quixotic", "sisyphean", "promethean", "dionysian",
+                "apollonian", "labyrinthine", "protean", "chimeric", "eldritch", "ineffable"
+            ],
+            
+            # Nouns - Abstract
+            "nouns_abstract": [
+                "abyss", "maelstrom", "palimpsest", "void", "entropy", "apocalypse", "genesis",
+                "singularity", "threshold", "echo", "resonance", "fracture", "constellation"
+            ]
+        }
+        
+        # Metaphor templates
+        self.metaphor_templates: List[str] = [
+            "like {0} carved from {1}",
+            "a {0} wrapped in {1}",
+            "dancing on the edge of {0} and {1}",
+            "where {0} devours {1}",
+            "a fractured {0} bleeding {1}",
+            "the {0} that whispers {1}",
+            "beneath the {0} lies {1}",
+            "{0} collapsing into {1}"
+        ]
+        
+        # State
+        self.n = 0
+        self.C = "sinuous"
+        self.sigma = 1
+        self.k = 0
+        self.surmounted_max = 0.0
+        self.history: List[Dict] = []
+        self.d_values = []
+        self.m_values = []
+        self.delta_values = []
+        self.rho_values = []
+    
+    def _toggle_cadence(self):
+        if random.random() < self.p_c:
+            self.C = "staccato" if self.C == "sinuous" else "sinuous"
+    
+    def _update_density(self) -> float:
+        if random.random() < 0.42:
+            self.sigma = 1 - self.sigma
+            self.k += 1
+        D = self.D0 + self.Ad * ((-1) ** self.k) * self.sigma
+        return max(0.18, min(3.1, D))
+    
+    def _get_rhythm_length(self) -> int:
+        return random.randint(8, 28) if self.C == "staccato" else random.randint(48, 135)
+    
+    def _sample_word(self, category: str) -> str:
+        if category in self.word_bank and self.word_bank[category]:
+            return random.choice(self.word_bank[category])
+        return "shadow"
+    
+    def _build_metaphor(self) -> str:
+        if random.random() < 0.35:
+            a = self._sample_word(random.choice(list(self.word_bank.keys())))
+            b = self._sample_word(random.choice(list(self.word_bank.keys())))
+            return random.choice(self.metaphor_templates).format(a, b)
+        return ""
+    
+    def _register_deviation(self) -> float:
+        return random.uniform(-1.55, 1.55)
+    
+    def _referential_weave(self) -> float:
+        return random.uniform(0.35, 3.8)
+    
+    def _mean(self, lst: List[float]) -> float:
+        return sum(lst) / len(lst) if lst else 0.0
+    
+    def _variance_term(self) -> float:
+        if not self.history:
+            return 0.0
+        mean_d = self._mean(self.d_values)
+        mean_m = self._mean(self.m_values)
+        mean_delta = self._mean([abs(x) for x in self.delta_values])
+        mean_rho = self._mean(self.rho_values)
+        
+        total = 0.0
+        for i in range(len(self.history)):
+            var = ((self.d_values[i] - mean_d) ** 2 +
+                   (self.m_values[i] - mean_m) ** 2 +
+                   (abs(self.delta_values[i]) - mean_delta) ** 2 +
+                   (self.rho_values[i] - mean_rho) ** 2)
+            total += var
+        return total / len(self.history)
+    
+    def next_state(self) -> Dict:
+        self._toggle_cadence()
+        D = self._update_density()
+        R_len = self._get_rhythm_length()
+        M = self.mb + int(self.alpha * random.random()) if D > 1.7 else self.mb
+        Delta = self._register_deviation()
+        rho = self._referential_weave()
+        
+        current_load = D + self.lambda_reg * abs(Delta) + self.mu * M
+        self.surmounted_max = max(self.surmounted_max, current_load)
+        
+        state = {
+            "n": self.n,
+            "C": self.C,
+            "D": round(D, 3),
+            "R_len": R_len,
+            "M": M,
+            "Δ": round(Delta, 3),
+            "ρ": round(rho, 3),
+            "surmounted": round(self.surmounted_max, 3),
+            "negative_space": D < self.theta_starve
+        }
+        
+        self.d_values.append(D)
+        self.m_values.append(float(M))
+        self.delta_values.append(Delta)
+        self.rho_values.append(rho)
+        self.history.append(state)
+        self.n += 1
+        return state
+    
+    def generate_sentence(self, state: Dict) -> str:
+        """Generate a stylistically controlled sentence using the word bank"""
+        parts = []
+        
+        if state["C"] == "staccato":
+            # Short, sharp
+            for _ in range(random.randint(3, 7)):
+                parts.append(self._sample_word(random.choice(["terse", "slang", "verbs_high"])))
+            sentence = " ".join(parts) + "."
+        else:
+            # Sinuous, dense
+            density = state["D"]
+            sentence = []
+            
+            if density > 2.2:
+                sentence.append(self._sample_word("formal"))
+                sentence.append(self._sample_word("archaic"))
+            
+            sentence.append(self._sample_word("verbs_high"))
+            sentence.append(self._build_metaphor())
+            
+            if density > 1.8:
+                sentence.append(self._sample_word("poetic"))
+                sentence.append(self._sample_word("adjectives"))
+            
+            sentence.append(self._sample_word("nouns_abstract"))
+            
+            if random.random() < 0.4:
+                sentence.append(self._sample_word("technical"))
+            
+            full = " ".join([w for w in sentence if w])
+            sentence = full[0].upper() + full[1:] + "."
+        
+        return sentence.strip()
+    
+    def generate_paragraph(self, num_sentences: int = 5) -> str:
+        """Generate a full paragraph with dynamic styling"""
+        paragraph = []
+        for _ in range(num_sentences):
+            state = self.next_state()
+            sent = self.generate_sentence(state)
+            if state["negative_space"]:
+                sent = "..." + sent
+            paragraph.append(sent)
+        
+        return " ".join(paragraph)
+    
+    def get_uniformity_penalty(self) -> float:
+        return self._variance_term()
+    
+    def summary(self):
+        print(f"\nDynamic Stylistic Operator — {self.n} steps executed")
+        print(f"Uniformity Penalty: {self.get_uniformity_penalty():.4f}")
+        print(f"Peak Stylistic Load: {self.surmounted_max:.3f}")
+        print(f"Word Bank Size: {sum(len(words) for words in self.word_bank.values())} tokens")
+
+
+# =============== DEMO ===============
+if __name__ == "__main__":
+    op = DynamicStylisticOperator()
+    print("Extensive Word Bank Dynamic Stylistic Operator Initialized\n")
+    
+    for i in range(8):
+        state = op.next_state()
+        para = op.generate_paragraph(3 if i % 3 == 0 else 1)
+        print(f"n={state['n']:2d} | C={state['C']:9} | D={state['D']:.2f} | "
+              f"M={state['M']} | Peak={state['surmounted']:.2f}")
+        print(para)
+        print("-" * 90)
+    
+    op.summary()
