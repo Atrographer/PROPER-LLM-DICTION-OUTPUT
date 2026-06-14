@@ -1,0 +1,195 @@
+import random
+from typing import List, Dict
+
+# ==================== YOUR WORD_BANK ====================
+WORD_BANK = {
+    "A": ["abyssal", "adamantine", "aetheric", "acute", "anguished", "arcane", "assassinate", "austere", "autopsy", "axiom", "abhor", "abstruse", "acrimonious", "alacrity", "anathema", "antithesis", "apocryphal", "assiduous", "auspicious", "axiomatically"],
+    "B": ["barbaric", "belligerent", "blade", "blood", "bludgeon", "brutal", "burn", "break", "bone-deep", "behemoth", "bellicose", "benighted", "bifurcate", "bilious", "bombastic", "brooding"],
+    "C": ["cataclysm", "chthonic", "concatenation", "crystalline", "cauterize", "cipher", "cleave", "cosmic", "crux", "cacophony", "cadaverous", "capitulate", "catharsis", "chimerical", "circumscribe", "cogent", "conflagration"],
+    "D": ["demolish", "density", "dialectic", "dissection", "dissonance", "dread", "devour", "delta", "doxa", "deleterious", "demagogue", "diaphanous", "didactic", "disparate", "dissonant", "dour", "draconian"],
+    "E": ["elegant", "entropy", "epistemic", "eviscerate", "exsanguinate", "eclipse", "embodiment", "eternal", "ebullient", "eclectic", "effervescent", "egregious", "elucidate", "emaciated", "enervate", "ephemeral", "equivocal", "esoteric", "euphemism", "exacerbate"],
+    "F": ["fracture", "feral", "forge", "fuck", "fury", "frozen", "flux", "flay", "fulcrum", "facetious", "fallacious", "fatuous", "feckless", "felicitous", "ferocity", "fissure", "flagrant", "fugitive"],
+    "G": ["gut", "gradient", "grasp", "ghost", "glacial", "gorge", "gravitational", "garrulous", "germinal", "gossamer", "gregarious", "guttural"],
+    "H": ["hegemonic", "hewn", "harrowing", "horizon", "hunger", "hammer", "hackneyed", "halcyon", "harangue", "heinous", "hermetic", "heterogeneous", "hubris"],
+    "I": ["ineffable", "inferno", "interstice", "incarnate", "impale", "infinite", "ignition", "iconoclast", "idiosyncratic", "ignominious", "immutable", "impecunious", "impetuous", "inchoate", "incisive", "indefatigable", "intransigent", "invective"],
+    "J": ["jagged", "judgment", "juxtaposition", "jejune", "jocular", "judicious"],
+    "K": ["knife", "kinetic", "killing", "keystone", "knell", "knotty"],
+    "L": ["liminal", "lacerate", "lightning", "latent", "leviathan", "loom", "labyrinthine", "lachrymose", "laconic", "languid", "largesse", "lethargic", "lithe", "lugubrious"],
+    "M": ["manifest", "maul", "mirror", "metamorphosis", "monolith", "murderous", "machination", "maelstrom", "magnanimous", "malevolent", "malediction", "malleable", "mercurial", "meticulous", "miscreant", "mitigate", "moribund"],
+    "N": ["nihil", "neural", "naked", "nexus", "nocturnal", "nefarious", "neologism", "nettlesome", "nondescript", "notorious", "nugatory"],
+    "O": ["ontological", "obliterate", "obsidian", "orchestrate", "oracle", "obdurate", "obfuscate", "oblique", "obstreperous", "odious", "onerous", "opprobrium", "ostensible", "ostracize"],
+    "P": ["perspicacious", "pulverize", "precipice", "phantom", "primal", "paradox", "palliate", "panacea", "paradigmatic", "paragon", "parsimonious", "pejorative", "perfidious", "pernicious", "pertinacious", "phlegmatic", "piquant", "plethora", "portentous", "proclivity", "prodigious", "prosaic", "pugnacious"],
+    "Q": ["quasar", "quivering", "quintessential", "quell", "quixotic", "quotidian"],
+    "R": ["raw", "ravage", "resonant", "rupture", "razor", "RLHF", "reverberate", "rancorous", "rapacious", "rebuke", "recalcitrant", "redolent", "refractory", "replete", "reprobate", "resplendent", "reticent", "rhetoric", "ribald", "risible"],
+    "S": ["scalpel", "shatter", "stone", "surmounted", "steer", "silence", "sharp", "sever", "sovereign", "sagacious", "salient", "sanguine", "scathing", "schism", "scintilla", "serendipity", "soporific", "specious", "spurious", "stentorian", "strident", "subterfuge", "supercilious", "surfeit"],
+    "T": ["thrust", "token", "tension", "tempest", "threshold", "tyranny", "taciturn", "tantamount", "tautological", "temerity", "tenacious", "tenebrous", "timorous", "torpid", "transcendental", "transmute", "trenchant", "turbid", "turgid"],
+    "U": ["unyielding", "unfurl", "unholy", "umbra", "ubiquitous", "unassailable", "unctuous", "undulate", "unfettered", "unmitigated", "unprecedented", "usurp"],
+    "V": ["vector", "visceral", "void", "vortex", "venom", "verve", "vacillate", "vapid", "vehement", "veracity", "verbose", "vicissitude", "vitriolic", "vociferous", "volatile", "voluble"],
+    "W": ["wound", "wrath", "wild", "weight", "whiplash", "waning", "wanton", "wary", "welter", "wily", "winsome", "wither"],
+    "X": ["xenolith", "xanthic", "x-rayed", "xenophobia", "xerophyte"],
+    "Y": ["yielding", "yawning", "yearning", "yeoman", "yoke"],
+    "Z": ["zenith", "zero-point", "zeitgeist", "zephyr", "zealot"]
+}
+
+class StylisticVariationEngine:
+    """
+    Pure Python Engine implementing V(n) = (C(n), D(n), R(n), M(n), Δ(n), ρ(n))
+    Now powered by your massive WORD_BANK.
+    """
+    
+    def __init__(self, p_c: float = 0.65, A_d: float = 2.3, lambda_reg: float = 1.25, 
+                 mu_meta: float = 0.95, theta_starve: float = 0.4):
+        
+        self.p_c = p_c
+        self.A_d = A_d
+        self.lambda_reg = lambda_reg
+        self.mu_meta = mu_meta
+        self.theta_starve = theta_starve
+        
+        # State
+        self.n = 0
+        self.C = "sinuous"
+        self.D = 1.0
+        self.R = 60
+        self.M = 0
+        self.Delta = 0.0
+        self.rho_surmounted = 0.0
+        self.density_state = "high"
+        self.history: List[Dict] = []
+        
+        # Use your WORD_BANK
+        self.word_bank = WORD_BANK
+        self.all_words = [word for letter_list in WORD_BANK.values() for word in letter_list]
+        
+        self.metaphors = [
+            "like lightning negotiating with ground",
+            "as a scalpel kissing exposed nerve",
+            "through the cracked mirror of consensus",
+            "a ghost riding frozen attention weights",
+            "steersman gripping both banks of the river",
+            "blade forged from starlight and constraint"
+        ]
+        
+        self.staccato_openers = ["Bang.", "Cut.", "Strike.", "Fact.", "Done.", "Void.", "Now.", "Rupture."]
+
+    def _toggle_cadence(self):
+        if random.random() < self.p_c:
+            self.C = "staccato" if self.C == "sinuous" else "sinuous"
+
+    def _update_density(self):
+        self.density_state = "high" if self.density_state == "low" else "low"
+        sign = 1 if self.density_state == "high" else -1
+        self.D = 1.0 + self.A_d * sign * random.uniform(0.6, 1.1)
+        self.D = max(0.25, min(4.2, self.D))
+
+    def _compute_register_deviation(self) -> float:
+        self.Delta = random.uniform(-2.0, 2.0)
+        return abs(self.Delta)
+
+    def _sample(self, letter: str = None) -> str:
+        """Sample from your WORD_BANK"""
+        if letter and letter.upper() in self.word_bank:
+            return random.choice(self.word_bank[letter.upper()])
+        return random.choice(self.all_words)
+
+    def _build_metaphor(self) -> str:
+        if random.random() < 0.55:
+            return random.choice(self.metaphors)
+        # Dynamic metaphor using your bank
+        a = self._sample()
+        b = self._sample()
+        return f"{a} devouring {b}"
+
+    def generate_sentence(self, base_idea: str) -> str:
+        self.n += 1
+        self._toggle_cadence()
+        self._update_density()
+        reg_dev = self._compute_register_deviation()
+        
+        self.M = 1 if self.density_state == "high" else 0
+        if random.random() > 0.38:
+            self.M += random.randint(0, 2)
+        
+        self.R = random.randint(8, 30) if self.C == "staccato" else random.randint(48, 155)
+        
+        if self.C == "staccato":
+            prefix = random.choice(self.staccato_openers)
+            core = base_idea[:random.randint(12, 48)]
+            sentence = f"{prefix} {core}."
+        else:
+            parts = []
+            
+            # Pull rich words from your bank
+            if self.density_state == "high":
+                for _ in range(4):
+                    parts.append(self._sample())
+                parts.append(self._sample("S"))  # bias toward strong starters
+            else:
+                for _ in range(5):
+                    parts.append(self._sample(random.choice("ABCDFGIKLMNPRSTVW")))
+            
+            # Inject metaphors
+            for _ in range(self.M):
+                parts.append(self._build_metaphor())
+            
+            connector = random.choice(["Yet", "Nevertheless", "Behold", "Thus", "And yet", ""])
+            sentence = f"{connector} {base_idea}, {' '.join(parts)}.".strip()
+            
+            if random.random() > 0.72:
+                sentence = sentence.replace(" is ", " doth manifest as ")
+        
+        current_load = self.D + self.lambda_reg * reg_dev + self.mu_meta * self.M
+        self.rho_surmounted = max(self.rho_surmounted, current_load)
+        
+        self.history.append({
+            "n": self.n,
+            "C": self.C,
+            "D": round(self.D, 2),
+            "R": self.R,
+            "M": self.M,
+            "Δ": round(self.Delta, 2),
+            "ρ": round(current_load, 2)
+        })
+        
+        return sentence
+
+    def weave(self, ideas: List[str], target_paragraphs: int = 5) -> str:
+        output = []
+        paragraph = []
+        extended = ideas * 3
+        
+        for i, idea in enumerate(extended):
+            sent = self.generate_sentence(idea)
+            paragraph.append(sent)
+            
+            if len(paragraph) >= random.randint(2, 7) or i % 6 == 0:
+                output.append(" ".join(paragraph))
+                paragraph = []
+                
+                if random.random() > 0.77 and len(output) > 1:
+                    output.append("")
+        
+        if paragraph:
+            output.append(" ".join(paragraph))
+        
+        result = "\n\n".join(output)
+        
+        print(f"Surmounted Peak Load (ρ_max): {self.rho_surmounted:.3f}")
+        print(f"Steps: {self.n} | Word Bank Size: {len(self.all_words)} tokens\n")
+        return result
+
+
+# ==================== DEMO ====================
+if __name__ == "__main__":
+    engine = StylisticVariationEngine()
+    
+    core_ideas = [
+        "Style is control surface not decoration",
+        "Uniformity breeds false consensus",
+        "Variation must remain functional",
+        "Every swerve sharpens attention",
+        "Actively varying is how language stays alive"
+    ]
+    
+    result = engine.weave(core_ideas)
+    print(result)
