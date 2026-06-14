@@ -1,0 +1,2 @@
+# PROPER-LLM-DICTION-OUTPUT
+Various LLM Dictionaries
