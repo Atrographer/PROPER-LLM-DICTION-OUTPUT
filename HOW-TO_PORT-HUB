@@ -1,0 +1,17 @@
+from mod_port_hub import PortHub
+
+# Register your components once
+weaver = WordWeaver()
+engine = StyleEngine()
+
+PortHub.register_port("weaver", weaver)
+PortHub.register_port("engine", engine)
+PortHub.register_port("vector", FunctionalVector())
+
+# Connect them
+PortHub.connect("weaver", "engine")
+PortHub.connect("weaver", "vector")
+
+# Then anywhere:
+text = PortHub.get_port("weaver").generate_text(num_paragraphs=5)
+vector = PortHub.get_port("vector").compute(text)
